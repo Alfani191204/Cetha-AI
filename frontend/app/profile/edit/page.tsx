@@ -1,0 +1,119 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { ArrowLeft, User, Store, ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+interface UserProfile {
+  nama: string;
+  usaha: string;
+  jenis?: string;
+}
+
+export default function EditProfilePage() {
+  const [nama, setNama] = useState("");
+  const [usaha, setUsaha] = useState("");
+  const [jenis, setJenis] = useState("Kuliner");
+  const router = useRouter();
+
+  useEffect(() => {
+    const userData = localStorage.getItem("cetha_user");
+    if (userData) {
+      try {
+        const parsed: UserProfile = JSON.parse(userData);
+        setNama(parsed.nama || "");
+        setUsaha(parsed.usaha || "");
+        setJenis(parsed.jenis || "Kuliner");
+      } catch (e) {
+        // Fallback
+      }
+    }
+  }, []);
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    localStorage.setItem(
+      "cetha_user", 
+      JSON.stringify({ nama, usaha, jenis })
+    );
+    router.push("/profile");
+  };
+
+  return (
+    <div className="mx-auto max-w-[430px] min-h-screen bg-[var(--bg)] text-[var(--text)] flex flex-col px-6 relative overflow-x-hidden font-sans pb-10">
+      
+      {/* Header */}
+      <header className="pt-10 pb-8 flex items-center">
+        <Link href="/profile" className="p-2 bg-[var(--card)] shadow-sm rounded-full hover:opacity-80 transition-opacity mr-4">
+          <ArrowLeft className="w-5 h-5 text-[var(--text)]" />
+        </Link>
+        <h1 className="text-2xl font-bold text-[var(--text)] tracking-tight">Edit Profil</h1>
+      </header>
+
+      {/* Form Section */}
+      <form onSubmit={handleSave} className="w-full space-y-4">
+        
+        {/* Nama Lengkap */}
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <User className="h-5 w-5 text-[var(--muted)] group-focus-within:text-[var(--primary)] transition-colors" />
+          </div>
+          <input
+            type="text"
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
+            className="block w-full pl-11 pr-4 py-3.5 bg-[var(--card)] border border-[var(--border)] rounded-2xl text-sm text-[var(--text)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--primary)] transition-all"
+            placeholder="Nama Lengkap"
+            required
+          />
+        </div>
+
+        {/* Nama Usaha */}
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Store className="h-5 w-5 text-[var(--muted)] group-focus-within:text-[var(--primary)] transition-colors" />
+          </div>
+          <input
+            type="text"
+            value={usaha}
+            onChange={(e) => setUsaha(e.target.value)}
+            className="block w-full pl-11 pr-4 py-3.5 bg-[var(--card)] border border-[var(--border)] rounded-2xl text-sm text-[var(--text)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--primary)] transition-all"
+            placeholder="Nama Usaha"
+            required
+          />
+        </div>
+
+        {/* Jenis Usaha Dropdown */}
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+            <Store className="h-5 w-5 text-[var(--muted)] group-focus-within:text-[var(--primary)] transition-colors" />
+          </div>
+          <select
+            value={jenis}
+            onChange={(e) => setJenis(e.target.value)}
+            className="block w-full pl-11 pr-10 py-3.5 bg-[var(--card)] border border-[var(--border)] rounded-2xl text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary)] transition-all appearance-none relative"
+            required
+          >
+            <option value="Kuliner" className="bg-[var(--card)] text-[var(--text)]">Kuliner</option>
+            <option value="Fashion" className="bg-[var(--card)] text-[var(--text)]">Fashion</option>
+            <option value="Sembako" className="bg-[var(--card)] text-[var(--text)]">Sembako</option>
+            <option value="Jasa" className="bg-[var(--card)] text-[var(--text)]">Jasa</option>
+            <option value="Lainnya" className="bg-[var(--card)] text-[var(--text)]">Lainnya</option>
+          </select>
+          <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+            <ChevronDown className="h-4 w-4 text-[var(--muted)]" />
+          </div>
+        </div>
+
+        {/* Save Button */}
+        <button
+          type="submit"
+          className="w-full !mt-8 bg-[var(--primary)] hover:opacity-90 text-white font-semibold py-3.5 rounded-2xl transition-all shadow-sm active:scale-[0.98]"
+        >
+          Simpan Perubahan
+        </button>
+      </form>
+    </div>
+  );
+}
